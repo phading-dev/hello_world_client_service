@@ -12,7 +12,7 @@ spec:
       labels:
         app: hello-world-client-service-pod
     spec:
-      serviceAccountName: hello-world-client-service-account
+      serviceAccountName: hello-world-client-account
       containers:
       - name: hello-world-client-service-container
         image: gcr.io/phading-dev/hello-world-client-service:latest

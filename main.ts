@@ -1,7 +1,7 @@
 import express = require("express");
 import http = require("http");
 import promClient = require("prom-client");
-import fetch from "node-fetch";
+import fetch = require("node-fetch");
 
 async function main() {
   let app = express();

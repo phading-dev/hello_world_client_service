@@ -6,8 +6,8 @@ export PROJECT_ID=phading-dev
 export PROJECT_NUMBER=178489203789
 export REGION=us-central1
 export CLUSTER_NAME=phading-cluster
-export BUILDER_ACCOUNT=hello-world-client-service-builder
-export SERVICE_ACCOUNT=hello-world-client-service-account
+export BUILDER_ACCOUNT=hello-world-client-builder
+export SERVICE_ACCOUNT=hello-world-client-account
 
 # Create service account
 gcloud iam service-accounts create $BUILDER_ACCOUNT
