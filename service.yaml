@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world-client-service-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hello-world-client-service-pod
+  template:
+    metadata:
+      labels:
+        app: hello-world-client-service-pod
+    spec:
+      serviceAccountName: hello-world-client-service-account
+      containers:
+      - name: hello-world-client-service-container
+        image: gcr.io/phading-dev/hello-world-client-service:latest
+        ports:
+        - containerPort: 8080
+        - containerPort: 8081
+---
+apiVersion: monitoring.googleapis.com/v1
+kind: PodMonitoring
+metadata:
+  name: hello-world-client-service-external-monitoring
+spec:
+  selector:
+    matchLabels:
+      app: hello-world-client-service-pod
+  endpoints:
+  - port: 8081
+    path: /metricsz
+    interval: 30s
+---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: hello-world-client-service-external-neg-health-check
+spec:
+  healthCheck:
+    port: 8081
+    type: HTTP
+    requestPath: /healthz
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world-client-service-external
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+    beta.cloud.google.com/backend-config: '{"default": "hello-world-client-service-external-neg-health-check"}'
+spec:
+  selector:
+    app: hello-world-client-service-pod
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8081
+  type: ClusterIP
+---
+apiVersion: monitoring.googleapis.com/v1
+kind: PodMonitoring
+metadata:
+  name: hello-world-client-service-internal-monitoring
+spec:
+  selector:
+    matchLabels:
+      app: hello-world-client-service-pod
+  endpoints:
+  - port: 8080
+    path: /metricsz
+    interval: 30s
+---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: hello-world-client-service-internal-neg-health-check
+spec:
+  healthCheck:
+    port: 8080
+    type: HTTP
+    requestPath: /healthz
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world-client-service-internal
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+    beta.cloud.google.com/backend-config: '{"default": "hello-world-client-service-internal-neg-health-check"}'
+spec:
+  selector:
+    app: hello-world-client-service-pod
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
