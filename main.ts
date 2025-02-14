@@ -14,7 +14,7 @@ async function main() {
   });
   app.get("/c", async (req, res) => {
     let response = await (
-      await fetch("http:///hw")
+      await fetch("http://10.128.0.27/hw")
     ).text();
     res.send(`Calling phading-ingress-internal/hw: ${response}`);
   });
